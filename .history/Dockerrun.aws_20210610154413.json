@@ -1,0 +1,23 @@
+{
+    "AWSEBDockerrunVersion": 2,
+    "containerDefinitions": [
+        {
+            "name": "client",
+            "image": "wychme/multi-client",
+            "hostname": "client",
+            "essential": false
+        },
+        {
+            "name": "api",
+            "image": "wychme/multi-server",
+            "hostname": "api",
+            "essential": false
+        },
+        {
+            "name": "worker",
+            "image": "wychme/multi-worker",
+            "hostname": "worker",
+            "essential": false
+        }
+    ]
+}
