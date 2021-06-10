@@ -1,0 +1,33 @@
+language: generic 
+sudo: required
+services: 
+  - docker
+
+before_install:
+  - docker build -t wychme/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true wychme/react-test npm run test
+
+after_success:
+  - docker build -t wychme/multi-client ./client
+  - docker build -t wychme/multi-nginx ./nginx
+  - docker build -t wychme/multi-server ./server
+  - docker build -t wychme/multi-worker ./worker
+  - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_ID" --password-stdin
+  - docker push wychme/multi-client
+  - docker push wychme/multi-nginx
+  - docker push wychme/multi-server
+  - docker push wychme/multi-worker
+
+deploy: 
+  privider: elasticbeanstalk
+  region: "us-east-1"
+  app: "multi-docker"
+  env: "Multidocker-env"
+  bucket_name: "elasticbeanstalk-us-east-1-917284451557"
+  bucket_path: "multi-docker"
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_ID
+  secret_access_key: $AWS_SECRET_KEY
